@@ -1,3 +1,4 @@
+#include <ncurses.h>
 #define COLOR 5
 #define FIELD_WIDTH 80     //may change
 #define FIELD_HEIGHT 24
@@ -5,11 +6,11 @@
 #define ALIEN_MAXH 5  //define later(9)
 #define PLAYER_WIDTH 7
 #define FPS 20
-extern WINDOW *alienGroup;
-extern WINDOW *playerShip;
-extern WINDOW *bunkers;
-extern WINDOW *alienMissile;	
-extern WINDOW *playerMissile;
+WINDOW *alienGroup;
+WINDOW *playerShip;
+WINDOW *bunkers;
+WINDOW *alienMissile;	
+WINDOW *playerMissile;
 struct playerShip  {
 	int playerMissile;	 //to check missile status
 	int playerMissileExist;	 //to check missile status
@@ -20,9 +21,15 @@ struct playerShip  {
 			 //to check player position along x axis
 };
 struct playerShip player;
-extern int alienX;
-extern int alienY;
-extern int alienMissileY;
-extern int alienMissileX;
-extern int alienMissileExist;	 //to check missile status
-extern int alienGroupBin[5][9];
+int alienX = 0;
+int alienY = 0;
+int alienMissileY = 0;
+int alienMissileX = 0;
+int alienMissileExist;	 //to check missile status
+int alienGroupBin[5][9] = { 
+					{1, 1, 1, 1, 1, 1, 1, 1, 1},
+					{2, 2, 2, 2, 2, 2, 2, 2, 2},
+					{0, 0, 2, 2, 2, 2, 2, 0, 0},
+					{0, 0, 0, 3, 3, 3, 0, 0, 0},
+					{0, 0, 0, 0, 3, 0, 0, 0, 0}
+};
