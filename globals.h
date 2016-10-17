@@ -4,12 +4,15 @@
 #define ALIEN_MAXW  36   //define later(27)
 #define ALIEN_MAXH 5  //define later(9)
 #define PLAYER_WIDTH 7
-#define FPS 20
+#define FPS 5
+
 extern WINDOW *alienGroup;
 extern WINDOW *playerShip;
 extern WINDOW *bunkers;
 extern WINDOW *alienMissile;	
 extern WINDOW *playerMissile;
+extern WINDOW *healthBoard;
+
 struct playerShip  {
 	int playerMissile;	 //to check missile status
 	int playerMissileExist;	 //to check missile status

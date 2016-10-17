@@ -4,21 +4,13 @@
 #include <unistd.h>
 #include <signal.h>
 #include <ncurses.h>
+#include <string.h>
 #include "globals1.h"
 #include "player.h"
 #include "alien.h"
-
-//shoot the player missile
-/*void playerMissileShoot() {
-	static int m_exist = 0; //checks if missile exists
+#include "score.h"
 	
-}*/
-/*void alienMissile() {
-	//move missile missile y++
-	//clear the old position
-}*/
-	
-// test function
+/* test function */
 void bunkersInit() {
 	bunkers = newwin(3, 3, 20, FIELD_WIDTH / 2);
 	char a[3][3] = {
@@ -31,6 +23,8 @@ void bunkersInit() {
 	mvwaddstr(bunkers, 2, 0, a[2]);
 	wrefresh(bunkers);
 }
+
+/* initialize colors for black background */
 void colorsInit() {
 	start_color();
 	init_pair(1, COLOR_RED,		COLOR_BLACK);
@@ -54,7 +48,9 @@ void battleFieldInit() {
 	bunkersInit();
 	playerShipInit();
 	alienGroupInit();
+	healthBoardInit();
 }
+
 /* This Method is called every 1 / FPS seconds( #define ) */
 void MyThread() {
 	// handles all the cases like pause, game over, player movement, 
@@ -62,8 +58,10 @@ void MyThread() {
 	alienShoot();
 	playerMissileFun();	
 }
+
+/* this function takes inputs to control the game */
 void takeInput() {
-	int ch; //take integer for ascii values of other key are greater than 256
+	int ch;
 	ch = getch();
 	switch(ch) {
 		case KEY_RIGHT:
@@ -75,29 +73,29 @@ void takeInput() {
 		case ' ':
 			playerMissileShoot();
 			break;	
-		//case game pause
-		//case game over
-		//case other
+		/* case game pause
+		 * case game over
+		 * case other */
 		default :
 			break;
 			
 	}
 }
+
+/* starting display screen will include menu */
 void startscreen() {
 	int ch;
 	WINDOW *startup;
 	startup = newwin(FIELD_HEIGHT, FIELD_WIDTH, 0, 0);
 	wattrset(startup, COLOR_PAIR(4));
-	wprintw(startup, "\n");
-	wprintw(startup, "\n");
-	wprintw(startup, "\n");
-	wprintw(startup, "\n");
-	wprintw(startup, "\n");
+	wprintw(startup, "\n\n\n\n\n\n\n\n");
 	wrefresh(startup);
 	while(ch != ' ')	
 		ch = getch();
 	
 }
+
+/* set up sigaction to run function MyThread after FPS seconds */
 void setUpTimer() {
 	struct itimerval mytimer;
 	struct sigaction myaction;
@@ -105,18 +103,39 @@ void setUpTimer() {
 	mytimer.it_value.tv_usec = 1000000 / FPS ;
 	mytimer.it_interval.tv_sec = 0;
 	mytimer.it_interval.tv_usec = 1000000 / FPS;
+
+	/* this library function generates SIGALRM signal after time corr. to mytimer */
 	setitimer(ITIMER_REAL, &mytimer, NULL);
 	myaction.sa_handler = &MyThread;
 	myaction.sa_flags = SA_RESTART;
 	sigaction(SIGALRM, &myaction, NULL);
 }
-int main() {
-	// initialize the attributes and begin curses mode
-	//set up function that runs continuously depending on time
+
+/*show usage to the user */
+void usage() {
+	printf("Game : Space-Attack\n");
+	printf(" Usage :\n");
+	printf(" Run only ./exe without arguments\n");
+	printf(" Use 'SpaceBar' to shoot and 'Arrow keys' to move left / right\n");
+	printf(" Use Ctrl-C to exit (Under construction)\n");
+}
+
+/* main function */
+int main(int argc, char *argv[]) {
+	
+	if(argc != 1 && strcmp(argv[1], "-h") == 0) {
+		usage();
+		exit(1);
+	}
+	/* initialize the attributes and begin curses mode */
 	battleFieldInit();
+	
+	/* set up function that runs continuously depending on time */
 	setUpTimer();
+	
 	while(1) {
 		takeInput();
 	}
+	
 	return 0;
 }

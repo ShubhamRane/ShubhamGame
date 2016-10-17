@@ -23,14 +23,14 @@ void playerShipDisplay() {
 
 void movePlayerRight() {
 	if(player.playerX != FIELD_WIDTH) {
-		player.playerX++;
+		player.playerX+=2;
 		playerShipDisplay();
 	}
 }
 
 void movePlayerLeft() {
 	if(player.playerX != 0) {
-		player.playerX--;
+		player.playerX-=2;
 		playerShipDisplay();
 	}
 }
