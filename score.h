@@ -1,3 +1,3 @@
-void updateScore();
+void updateBoard();
 void displayScore();
 void healthBoardInit();

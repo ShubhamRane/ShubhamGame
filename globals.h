@@ -4,7 +4,7 @@
 #define ALIEN_MAXW  36   //define later(27)
 #define ALIEN_MAXH 5  //define later(9)
 #define PLAYER_WIDTH 7
-#define FPS 5
+#define FPS 25
 
 extern WINDOW *alienGroup;
 extern WINDOW *playerShip;
@@ -19,10 +19,18 @@ struct playerShip  {
 	int playerX;
 	int playerY;
 	int playerMissileY;	 //to check missile status
-	int playerMissileX;	 //to check missile status
+	int playerMissileX;
+	int health;	 //to check missile status
 			 //to check player position along x axis
-};
-struct playerShip player;
+}player;
+/* Yet to be evaluated */
+extern int difficulty;
+extern int alienCount;
+extern int score;
+extern int level;
+extern int state;
+
+/* Yet to be evaluated */
 extern int alienX;
 extern int alienY;
 extern int alienMissileY;
