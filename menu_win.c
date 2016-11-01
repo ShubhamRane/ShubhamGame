@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) Shubham T. Rane shubhamr022@gmail.com
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ "This program is distributed in the hope that it will be useful,"
+
+ "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+ "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the"
+ "GNU Lesser General Public License for more details."
+ *
+ "You should have received a copy of the GNU Lesser General Public License
+ "along with this program; if not, write to the Free Software Foundation,
+ "Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
+ *
+ */
 #include <menu.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +28,6 @@
 char *choices[] = {
 	" Play Game              ",
 	" Difficulty             ",
-	" Space-Mode             ",
 	" High-Scores            ",
 	" Credits                ",
 	" Exit                   ",
@@ -90,7 +108,7 @@ int startMenu() {
 	i = 0;
 
 	while(1) {
-	
+
 		if(ch != 1 && ch != 3) {
 			c = wgetch(my_menu_win);
 		}
@@ -106,23 +124,23 @@ int startMenu() {
 				menu_driver(my_menu, REQ_UP_ITEM);
 				break;
 			case '\n': {
-					ITEM *cur;
-				 	int (*p)(char *);
-					cur = current_item(my_menu);
-		 			p = item_userptr(cur);
-					ch = p((char *)item_name(cur));
-					break;
-			}
+					   ITEM *cur;
+					   int (*p)(char *);
+					   cur = current_item(my_menu);
+					   p = item_userptr(cur);
+					   ch = p((char *)item_name(cur));
+					   break;
+				   }
 		}
 		displayMainMenu(my_menu_win);
 		wrefresh(my_menu_win);
-		if(ch == 0 || ch == 5)
+		if(ch == 0 || ch == 4)
 			return ch;
-		if(ch == 1 || ch == 3) {
+		if(ch == 1 || ch == 2) {
 			c = KEY_DOWN;
 			continue;
 		}
-			
+
 	}	
 	/* Unpost and free all the memory taken up */
 	unpost_menu(my_menu);
@@ -130,12 +148,12 @@ int startMenu() {
 
 	for(i = 0; i < n_choices; ++i)
 		free_item(my_items[i]);
-		
+
 	endwin();
 }
 
 void displayMainMenu(WINDOW *my_menu_win) {
-	
+
 	box(my_menu_win, 0, 0);
 	menu_title(my_menu_win, 1, 0, 32, "Space-Tak", COLOR_PAIR(5));
 	mvwaddch(my_menu_win, 2, 0, ACS_LTEE);
@@ -186,7 +204,7 @@ void difficultyMenu() {
 
 	post_menu(my_menu);
 	wrefresh(my_menu_win);
-	
+
 	while((c = wgetch(my_menu_win)) != 'q') {       
 		switch(c) {
 			case KEY_DOWN:
@@ -196,15 +214,15 @@ void difficultyMenu() {
 				menu_driver(my_menu, REQ_UP_ITEM);
 				break;
 			case '\n': {
-				ITEM *cur;
-				cur = current_item(my_menu);
-				i = 0;
-				while(strcmp(item_name(cur), choicesD[i]) != 0)
-					i++;
-				difficulty = i;
-				break;
-			}
-			break;
+					   ITEM *cur;
+					   cur = current_item(my_menu);
+					   i = 0;
+					   while(strcmp(item_name(cur), choicesD[i]) != 0)
+						   i++;
+					   difficulty = i;
+					   break;
+				   }
+				   break;
 		}
 		if(c == '\n')
 			break;
@@ -218,34 +236,17 @@ void difficultyMenu() {
 		free_item(my_items[i]);
 
 }
-/*
- * Copyright (C) Shubham T. Rane shubhamr022@gmail.com
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- *
- "This program is distributed in the hope that it will be useful,"
- "but WITHOUT ANY WARRANTY; without even the implied warranty of"
- "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the"
- "GNU Lesser General Public License for more details."
- *
- "You should have received a copy of the GNU Lesser General Public License
- "along with this program; if not, write to the Free Software Foundation,
- "Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
- *
- */
+
 void credits() {
 	WINDOW *cred;
 	int ch, x, y;	
-	cred = newwin(20, 80, 12, 30);
+	cred = newwin(25, 80, 12, 30);
 	refresh();
 
-	wattron(cred, COLOR_PAIR(6));
 	mvwhline(cred, 0, 0, ACS_DIAMOND, 80);
+	wattron(cred, COLOR_PAIR(6));
 	wmove(cred, 2, 0);
-	wprintw(cred, "* Copyright (C) Shubham T. Rane shubhamr022@gmail.com\n\n");
+	wprintw(cred, "* Copyright (C) Shubham T. Rane, Mail id: shubhamr022@gmail.com\n\n");
 	wprintw(cred, "* This program is free software; you can redistribute it and/or modify it\n");
 	wprintw(cred, "* under the terms of the GNU Lesser General Public License as published by\n");
 	wprintw(cred, "* the Free Software Foundation; either version 2.1 of the License, or\n");
@@ -256,12 +257,16 @@ void credits() {
 	wprintw(cred, "* GNU Lesser General Public License for more details.\n\n");
 	wprintw(cred, "* You should have received a copy of the GNU Lesser General Public License\n");
 	wprintw(cred, "* along with this program; if not, write to the Free Software Foundation,\n");
-	wprintw(cred, "* Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.\n");
+	wprintw(cred, "* Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.\n\n");
+	
+	wattron(cred, COLOR_PAIR(3));
+	wprintw(cred, "                           Press q to return                              \n");
+	wattroff(cred, COLOR_PAIR(2));
 	getyx(cred, y, x);
 	mvwhline(cred, y+1, x, ACS_DIAMOND, 80);
 	wattroff(cred, COLOR_PAIR(1));
 	wrefresh(cred);
-	
+
 	while((ch = getch()) != 'q'){}
 	werase(cred);
 	wrefresh(cred);
@@ -278,33 +283,26 @@ int func(char *name) {
 			break;
 		}
 	}
-	mvprintw(40, 0, "%s %d %d", name, choice, size);
-	refresh();
-	switch(i) {
-		case 0:
-		case 5:
-			return i;
+	//mvprintw(40, 0, "%s %d %d", name, choice, size);
+	//refresh();
+	switch(choice) {
 		case 1:
 			difficultyMenu();
 			refresh();
-			return 1;
-		case 4:
+			break;
+		case 3:
 			credits();
 			refresh();
-			return 4;
+			break;
+
 		case 2:
-			
-			return 2;
-			/* set space mode */
-		case 3:
 			displayHighScores();
 			refresh();
-			return 3;
-			/* high score */
+			break;
 		default:
-			return i;
 			break;
 	}
+	return choice;
 
 }
 

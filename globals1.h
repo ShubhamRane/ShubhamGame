@@ -1,10 +1,27 @@
+/*
+ * Copyright (C) Shubham T. Rane shubhamr022@gmail.com
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ "This program is distributed in the hope that it will be useful,"
+ "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+ "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the"
+ "GNU Lesser General Public License for more details."
+ *
+ "You should have received a copy of the GNU Lesser General Public License
+ "along with this program; if not, write to the Free Software Foundation,
+ "Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
+ *
+ */
 #define COLOR 5
 #define FIELD_WIDTH 80     //may change
 #define FIELD_HEIGHT 24
 #define ALIEN_MAXW  36   //define later(27)
 #define ALIEN_MAXH 5  //define later(9)
 #define PLAYER_WIDTH 7
-#define FPS 25
 
 WINDOW *alienGroup;
 WINDOW *playerShip;
@@ -28,6 +45,9 @@ struct playerShip  {
 
 	
 }player;
+
+pthread_t t1;
+
 int state;
 int difficulty = 1;
 int level = 10;
@@ -38,10 +58,4 @@ int alienCount;
 int alienMissileY = 0;
 int alienMissileX = 0;
 int alienMissileExist;
-int alienGroupBin[5][9] = { 
-					{1, 1, 1, 1, 1, 1, 1, 1, 1},
-					{2, 2, 2, 2, 2, 2, 2, 2, 2},
-					{3, 3, 3, 3, 3, 3, 3, 3, 3},
-					{4, 0, 0, 4, 4, 4, 0, 0, 4},
-					{1, 1, 1, 1, 5, 1, 1, 1, 1}
-};
+int alienGroupBin[5][9]; 

@@ -16,7 +16,10 @@
 #define GAME_OVER 10
 #define PAUSE 20
 #define INPUT 30
+#define QUIT 40
+#define FPS 20
 
+void usage();
 /* test function */
 void bunkersInit() {
 	bunkers = newwin(4, 5, 20, FIELD_WIDTH / 2);
@@ -48,9 +51,10 @@ void colorsInit() {
 /* returns 0 if successful returns 1 if interrupt */
 int battleFieldInit() {
 	int menuChoice;
+	/*check window size for max*/
 	/* initialize Windows for everything */
 	menuChoice = startMenu();
-	if(menuChoice == 5)
+	if(menuChoice == 4)
 		return 1;
 	initscr();
 	keypad(stdscr, TRUE);
@@ -71,6 +75,7 @@ int battleFieldInit() {
 /* This Method is called every 1 / FPS seconds( #define ) */
 void MyThread() {
 	/* handles all the cases like pause, game over, player movement */
+	pthread_join(t1, NULL);
 	static int i = 0;
 	if(state == GAME_OVER)
 		return;
@@ -95,14 +100,13 @@ void MyThread() {
 }
 
 /* this function takes inputs to control the game */
-int takeInput() {
-	int ch;
+void takeInput(void *ip) {
 	static int debug = 0;
 	if(debug == 0) {
 		state = INPUT;
 		debug = 1;
 	}
-	ch = getch();
+	int ch = *(int *)ip;
 	switch(state) {
 		case INPUT:	
 			switch(ch) {
@@ -117,13 +121,9 @@ int takeInput() {
 					break;
 				case 'p':
 					state = PAUSE;
-					sigset_t mask;
-					sigaddset(&mask, SIGALRM);
-					sigprocmask(SIG_BLOCK, &mask, NULL);
 					break;
 				case 'Q':
-					state = GAME_OVER;
-					return 1;
+					state = QUIT;
 					break;
 				default:
 					break;
@@ -132,9 +132,6 @@ int takeInput() {
 		case PAUSE:
 			if(ch == 'p') {
 				state = INPUT;	
-				sigset_t mask;
-				sigaddset(&mask, SIGALRM);
-				sigprocmask(SIG_UNBLOCK, &mask, NULL);
 			}
 			break;
 		case GAME_OVER: 
@@ -145,13 +142,11 @@ int takeInput() {
 				sigaddset(&mask, SIGALRM);
 				sigprocmask(SIG_BLOCK, &mask, NULL); 
 			}
-			return 0;
 			break;
 		default :
 			break;
 
 	}
-	return 0;
 }
 
 /* starting display screen will include menu */
@@ -169,12 +164,13 @@ void startscreen() {
 
 /* set up sigaction to run function MyThread after FPS seconds */
 void setUpTimer() {
+	int speed = FPS + difficulty*5;
 	struct itimerval mytimer;
 	struct sigaction myaction;
 	mytimer.it_value.tv_sec = 0;
-	mytimer.it_value.tv_usec = 1000000 / FPS ;
+	mytimer.it_value.tv_usec = 1000000 / speed ;
 	mytimer.it_interval.tv_sec = 0;
-	mytimer.it_interval.tv_usec = 1000000 / FPS;
+	mytimer.it_interval.tv_usec = 1000000 / speed;
 
 	/* this library function generates SIGALRM signal after time corr. to mytimer */
 	setitimer(ITIMER_REAL, &mytimer, NULL);
@@ -194,14 +190,21 @@ void usage() {
 
 /* main function */
 int main(int argc, char *argv[]) {
-	int deg;
-	int ip;
+	int deg, ip, x, y;
 	char name[15];
+	sigset_t mask;
+	sigaddset(&mask, SIGALRM);
+	initscr();
+	getmaxyx(stdscr, y, x);
+	endwin();
+	if(x < 140 || y < 40) {
+		printf("Warning : Make Window Full size before running\n");
+		return 0;
+	}
 	if(argc != 1 && strcmp(argv[1], "-h") == 0) {
 		usage();
 		return 0;
 	}
-
 	deg = battleFieldInit();
 	if(deg == 1) {
 		endwin();
@@ -212,10 +215,16 @@ int main(int argc, char *argv[]) {
 	 * deg == 0 */
 	/* set up function that runs continuously depending on time */
 	setUpTimer();
-	while(state != GAME_OVER) {
-		ip = takeInput();
+	while(state != GAME_OVER && state != QUIT) {
+		ip = getch();
+		pthread_create(&t1, NULL, (void *)takeInput, (void *)&ip);
+		pthread_join(t1, NULL);
+		if(state == PAUSE)
+			sigprocmask(SIG_BLOCK, &mask, NULL); 	
+		else
+			sigprocmask(SIG_UNBLOCK, &mask, NULL); 	
 	}
-	if(ip != 1) {
+	if(state == GAME_OVER) {
 		clearArena();
 		form(name);
 		storeScore(name, score);

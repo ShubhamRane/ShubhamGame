@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) Shubham T. Rane shubhamr022@gmail.com
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ "This program is distributed in the hope that it will be useful,"
+ "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+ "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the"
+ "GNU Lesser General Public License for more details."
+ *
+ "You should have received a copy of the GNU Lesser General Public License
+ "along with this program; if not, write to the Free Software Foundation,
+ "Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
+ *
+ */
 #include <ncurses.h>
 #include "globals.h"
 #include "alien.h"
@@ -12,7 +30,6 @@ void playerShipInit() {
 	wrefresh(playerShip);
 }
 
-/* declared player position x as global */
 void playerShipDisplay() {
 	/* delete original position */
 	mvwprintw(playerShip, 0, player.playerX - 2, "              ");
@@ -23,7 +40,7 @@ void playerShipDisplay() {
 }
 
 void movePlayerRight() {
-	if(player.playerX != FIELD_WIDTH) {
+	if(player.playerX <= FIELD_WIDTH - 5) {
 		player.playerX+=2;
 		playerShipDisplay();
 	}
@@ -37,14 +54,14 @@ void movePlayerLeft() {
 }
 /* Initiate the player missile */
 void playerMissileShoot() {
-	
+
 	if(player.playerMissileExist == 0) {
 		/* launch new missile */
 		player.playerMissileExist += 1;
 		player.playerMissileY = player.playerY - 1;
 		player.playerMissileX = player.playerX + PLAYER_WIDTH / 2;
 		playerMissile = newwin(1, 1, player.playerMissileY, player.playerMissileX); // playerY - 1 = 23
-		mvwaddch(playerMissile, 0, 0, ACS_PI);
+		mvwaddch(playerMissile, 0, 0, ACS_UARROW);
 		wrefresh(alienMissile);
 	}
 }
@@ -62,7 +79,7 @@ int playerMissileAlienCollision() {
 			return 1;
 		}
 	}
-	
+
 	else if(player.playerMissileY <= alienY  -  1)
 		return 2;
 	return 0;
@@ -78,7 +95,7 @@ void playerMissileFun() {
 		delwin(playerMissile);
 		player.playerMissileY -= 1;
 		playerMissile = newwin(1, 1, player.playerMissileY, player.playerMissileX); /* */
-		mvwaddch(playerMissile, 0, 0, ACS_UARROW);
+		mvwaddch(playerMissile, 0, 0, '!');
 		wrefresh(playerMissile);
 
 		/* check collision using function below */
@@ -89,5 +106,5 @@ void playerMissileFun() {
 			delwin(playerMissile);
 		}
 	}
-	
+
 }

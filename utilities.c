@@ -1,10 +1,27 @@
+/*
+ * Copyright (C) Shubham T. Rane shubhamr022@gmail.com
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ "This program is distributed in the hope that it will be useful,"
+ "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+ "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the"
+ "GNU Lesser General Public License for more details."
+ *
+ "You should have received a copy of the GNU Lesser General Public License
+ "along with this program; if not, write to the Free Software Foundation,
+ "Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
+ *
+ */
 #include <ncurses.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "globals.h"
 #include "utilities.h"
-#include "main.h"
 #include "alien.h"
 
 /* the below functions should be called in order storeScore() sortScore() and then displayScore()*/
@@ -65,7 +82,7 @@ void displayHighScores() {
 	mvwaddch(Score, 2, width - 1, ACS_RTEE);
 	mvwprintw(Score, 1, (width-strlen(head))/2, "%s", head);
 	wattroff(Score, COLOR_PAIR(6));
-	
+
 	/* Scan scores from file and display */
 	FILE *fp;
 	fp = fopen("high.txt", "r");
@@ -81,7 +98,7 @@ void displayHighScores() {
 	mvwprintw(Score, 19, 12, "Press Q to Return");
 	wrefresh(Score);
 	wattroff(Score, COLOR_PAIR(6));
-	
+
 	/* End curses Mode */
 	while((i = getch())) {
 		if(i == 'q' || i == 'Q')
@@ -96,17 +113,18 @@ void displayHighScores() {
 /* accepts name of the player and stores */
 void form(char *name) {
 	int y, x, i, ch;
+	char *str = "default";
 	WINDOW *my_win;
 	getmaxyx(stdscr, y, x);
-	my_win = newwin(15, 34, y/2 - 15, x/2 - 34);
+	my_win = newwin(15, 33, y/2 - 15, x/2 - 34);
 	keypad(my_win, true);
 	wattron(my_win, COLOR_PAIR(6));
 	box(my_win, 0, 0);
-	mvwprintw(my_win, 2, 6, "!!!!! Well Played !!!!!");
+	mvwprintw(my_win, 2, 5, "!!!!! Well Played !!!!!");
 	mvwprintw(my_win, 4, 11, "Your Score :");
 	mvwprintw(my_win, 6, 16, "%d", score);
 	mvwprintw(my_win, 8, 9, "Enter Your name : ");
-	mvwprintw(my_win, 9, 7, "(Use Space to submit)");
+	mvwprintw(my_win, 9, 5, "(Press Enter to submit)");
 	mvwhline(my_win, 13, 8, ACS_HLINE, 17);
 	mvwprintw(my_win, 12, 7, "|                 |");
 	wmove(my_win, 12, 9);
@@ -114,7 +132,7 @@ void form(char *name) {
 	wattron(my_win, COLOR_PAIR(3));
 	i = 0; /* points to end '\0' */
 	name[i] = '\0';
-	while(((ch = wgetch(my_win)) != 13) && (i>0)) {	/* Enter */
+	while(((ch = wgetch(my_win)) != 13)) {	/* Enter */
 		if(ch == ' ')
 			ch = '_';
 		if(ch == 263) { 	/* backspace */
@@ -133,23 +151,14 @@ void form(char *name) {
 		mvwprintw(my_win, 12, 9, "%s", name, ch);
 		wrefresh(my_win);
 	}
-	name[i] = '\0';
+	if(i == 0)
+		strcpy(name, str);
+	else
+		name[i] = '\0';
 	werase(my_win);
 	wrefresh(my_win);
 }
-	
-int gameOver() {
-	WINDOW *temp;
-	temp = newwin(35, 90, 0, 0);
-	werase(temp);
-	mvwprintw(temp, FIELD_HEIGHT / 2, FIELD_WIDTH / 2, "SORRY : GAME OVER");
-	wrefresh(temp);
-	usleep(1000000);
-	delwin(temp);
-	endwin();
-	state = 10; /* GAME_OVER input state */
-	return 1;
-}
+
 int checkGameOver() {
 	/* alien win condition */
 	if((alienY + ALIEN_MAXH >= player.playerY) || player.health <= 0)
