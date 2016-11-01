@@ -1,5 +1,5 @@
 all: program
-program: player.o alien.o main.o score.o utilities.o menu_win.o
+project: player.o alien.o main.o score.o utilities.o menu_win.o
 	cc main.o player.o alien.o score.o utilities.o menu_win.o -o program -lncurses -lmenu -lpthread
 player.o: player.c globals.h
 	cc -c player.c -Wall
