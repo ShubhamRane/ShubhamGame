@@ -23,7 +23,7 @@
 void playerShipInit() {
 	player.playerX = 40;
 	player.playerY = 24;
-	player.health = 5;
+	player.health = 10;
 	playerShip = newwin(1, 143, player.playerY, 0);
 	wattrset(playerShip, COLOR_PAIR(2));
 	mvwprintw(playerShip, 0, player.playerX, "<-)^(->");
@@ -75,7 +75,7 @@ int playerMissileAlienCollision() {
 			alienGroupBin[i][j] = 0;
 			alienGroupDisplay();
 			alienCount--;
-			score += i;
+			score += i * difficulty;
 			return 1;
 		}
 	}

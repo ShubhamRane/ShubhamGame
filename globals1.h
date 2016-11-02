@@ -16,11 +16,26 @@
  "Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
  *
  */
+
+#include <stdlib.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <signal.h>
+#include <ncurses.h>
+#include <string.h>
+
+#include "player.h"
+#include "alien.h"
+#include "score.h"
+#include "menu_win.h"
+#include "utilities.h"
+
+
 #define COLOR 5
-#define FIELD_WIDTH 80     //may change
+#define FIELD_WIDTH 80
 #define FIELD_HEIGHT 24
-#define ALIEN_MAXW  36   //define later(27)
-#define ALIEN_MAXH 5  //define later(9)
+#define ALIEN_MAXW  36 
+#define ALIEN_MAXH 5
 #define PLAYER_WIDTH 7
 
 WINDOW *alienGroup;

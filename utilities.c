@@ -165,7 +165,7 @@ int checkGameOver() {
 		return 1;
 	else if(alienCount <= 0) {
 		alienGroupInit();
-		if(player.health < 20)
+		if(player.health < 10)
 			player.health++;
 		level++;
 	}

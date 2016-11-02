@@ -1,48 +1,22 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <signal.h>
-#include <ncurses.h>
-#include <string.h>
+
 #include "globals1.h"
-#include "player.h"
-#include "alien.h"
-#include "score.h"
-#include "menu_win.h"
-#include "utilities.h"
 
 #define GAME_OVER 10
 #define PAUSE 20
 #define INPUT 30
 #define QUIT 40
-#define FPS 20
-/* test function */
-void bunkersInit() {
-	bunkers = newwin(4, 5, 20, FIELD_WIDTH / 2);
-	char a[4][6] = {
-		"_____",
-		"|   |",
-		"|   |",
-		"|___|"
-	};
-	mvwaddstr(bunkers, 0, 0, a[0]);
-	mvwaddstr(bunkers, 1, 0, a[1]);
-	mvwaddstr(bunkers, 2, 0, a[2]);
-	mvwaddstr(bunkers, 3, 0, a[3]);
-	//wrefresh(bunkers);
-}
+#define FPS 22
 
 /* initialize colors for black background */
 void colorsInit() {
 	start_color();
-	init_pair(1, COLOR_RED,		COLOR_BLACK);
-	init_pair(2, COLOR_GREEN,	COLOR_BLACK);
-	init_pair(3, COLOR_YELLOW,	COLOR_BLACK);
-	init_pair(4, COLOR_BLUE,	COLOR_BLACK);
-	init_pair(5, COLOR_MAGENTA,	COLOR_BLACK);
-	init_pair(6, COLOR_CYAN,	COLOR_BLACK);
-	init_pair(7, COLOR_WHITE,	COLOR_BLACK);
+	init_pair(1, COLOR_RED,	COLOR_BLACK);
+	init_pair(2, COLOR_GREEN, COLOR_BLACK);
+	init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(4, COLOR_BLUE, COLOR_BLACK);
+	init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+	init_pair(6, COLOR_CYAN, COLOR_BLACK);
+	init_pair(7, COLOR_WHITE, COLOR_BLACK);
 }
 
 /* returns 0 if successful returns 1 if interrupt */
@@ -62,13 +36,12 @@ int battleFieldInit() {
 	refresh();
 	colorsInit();
 	healthBoardInit();
-	bunkersInit();
 	alienGroupInit();
 	playerShipInit();
 	return 0;
 }
 
-/* This Method is called every 1 / FPS seconds( #define ) */
+/* This Method is called every frequency seconds defined in setUpTimer function */
 void MyThread() {
 	/* handles all the cases like pause, game over, player movement */
 	static int i = 0;
@@ -113,6 +86,7 @@ void takeInput() {
 					movePlayerLeft();
 					break;
 				case ' ':
+				case KEY_UP:
 					playerMissileShoot();
 					break;
 				case 'p':
@@ -120,6 +94,7 @@ void takeInput() {
 					sigset_t mask;
 					sigaddset(&mask, SIGALRM);
 					sigprocmask(SIG_BLOCK, &mask, NULL);
+					updateBoard(healthBoard);
 					break;
 				case 'Q':
 					state = QUIT;
@@ -134,6 +109,7 @@ void takeInput() {
 				sigset_t mask;
 				sigaddset(&mask, SIGALRM);
 				sigprocmask(SIG_UNBLOCK, &mask, NULL);
+				updateBoard(healthBoard);
 			}
 			break;
 		case GAME_OVER: 
@@ -166,12 +142,13 @@ void startscreen() {
 
 /* set up sigaction to run function MyThread after FPS seconds */
 void setUpTimer() {
+	int frequency = FPS + difficulty * 6;
 	struct itimerval mytimer;
 	struct sigaction myaction;
 	mytimer.it_value.tv_sec = 0;
-	mytimer.it_value.tv_usec = 1000000 / FPS ;
+	mytimer.it_value.tv_usec = 1000000 / frequency ;
 	mytimer.it_interval.tv_sec = 0;
-	mytimer.it_interval.tv_usec = 1000000 / FPS;
+	mytimer.it_interval.tv_usec = 1000000 / frequency;
 
 	/* this library function generates SIGALRM signal after time corr. to mytimer */
 	setitimer(ITIMER_REAL, &mytimer, NULL);
@@ -184,9 +161,10 @@ void setUpTimer() {
 void usage() {
 	printf("Game : Space-Attack\n");
 	printf(" Usage :\n");
-	printf(" Run only ./exe without arguments\n");
-	printf(" Use 'SpaceBar' to shoot and 'Arrow keys' to move left / right\n");
-	printf(" Use Ctrl-C to exit (Under construction)\n");
+	printf(" Run only ./project without arguments\n");
+	printf(" Use 'SpaceBar' or 'UP-Arrow-Key' to shoot and 'Arrow keys' to move left OR right\n");
+	printf(" Use 'p' to pause running game\n");
+	printf(" Use shift-q (Q) to quit running game\n");
 }
 
 /* main function */
@@ -208,8 +186,7 @@ int main(int argc, char *argv[]) {
 	deg = battleFieldInit();
 	if(deg == 1) {
 		endwin();
-		return 0;
-	}
+		return 0;}
 
 	/* initialize the attributes and begin curses mode
 	 * deg == 0 */

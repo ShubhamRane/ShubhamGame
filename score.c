@@ -31,14 +31,16 @@ void updateBoard(WINDOW *board) {
 	box(healthBoard, 0, 0);
 	wattroff(board, COLOR_PAIR(7));
 	wattron(board, COLOR_PAIR(3));
-	mvwprintw(healthBoard, 1, 5, "HEALTH : |                     |");
-	mvwprintw(healthBoard, 3, 5, "SCORE  : ");
-	mvwprintw(healthBoard, 5, 5, "LEVEL  : ");
-	mvwprintw(healthBoard, 5, 30,"DIFFICULTY  : ");
+	mvwprintw(healthBoard, 1, 5, "HEALTH : |           |");
+	if(state == 20) /* paused */
+		mvwprintw(healthBoard, 1, 40, "[ GAME PAUSED ]");
+	mvwprintw(healthBoard, 5, 5, "SCORE  : ");
+	mvwprintw(healthBoard, 3, 5, "LEVEL  : ");
+	mvwprintw(healthBoard, 3, 40,"DIFFICULTY  : ");
 	wattroff(board, COLOR_PAIR(3));
 	wattron(board, COLOR_PAIR(1));
-	mvwprintw(healthBoard, 3, 15, "%-10d", score);
-	mvwprintw(healthBoard, 5, 15, "%d", level);
+	mvwprintw(healthBoard, 5, 15, "%-10d", score);
+	mvwprintw(healthBoard, 3, 15, "%d", level);
 	switch(difficulty) {
 		case 0:
 			diff = "EASY";
@@ -55,7 +57,7 @@ void updateBoard(WINDOW *board) {
 		default:
 			break;
 	}
-	mvwprintw(healthBoard, 5, 45, "%s", diff);
+	mvwprintw(healthBoard, 3, 55, "%s", diff);
 
 	for(i = 0; i <= player.health; i++) {
 		mvwaddch(healthBoard, 1, 15 + i, ACS_CKBOARD);

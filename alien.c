@@ -32,7 +32,7 @@ void alienGroupDisplay() {
 	show = (show + 1) % 4;
 	Anime = show/2;
 
-	char alienType[2][6][5] = {{"\\_-/", "<o-> ", "[--]", "\\::/", "/^^\\", "    "}, {"\\-_/","<o0>","[__]", "\\''/", "/--\\", "    "}};
+	char alienType[2][6][5] = {{"\\_-/", "<O-> ", "(-_)", "\\--/", "/-_\\", "    "}, {"\\-_/","<-O>","(_-)", "\\''/", "/_-\\", "    "}};
 
 	/* Made changes here */
 	werase(alienGroup);
@@ -60,11 +60,11 @@ void alienGroupDisplay() {
 					mvwaddstr(alienGroup, i, j * 4, alienType[Anime][3]);
 					break;
 				case 4:
-					wattrset(alienGroup, COLOR_PAIR(4));
+					wattrset(alienGroup, COLOR_PAIR(GREEN));
 					mvwaddstr(alienGroup, i, j * 4, alienType[Anime][4]);
 					break;
 				case 5:
-					wattrset(alienGroup, COLOR_PAIR(5));
+					wattrset(alienGroup, COLOR_PAIR(RED));
 					mvwaddstr(alienGroup, i, j * 4, alienType[Anime][0]);
 					break;
 
@@ -160,7 +160,8 @@ int alienMissilePlayerCollision() {
 	if(alienMissileY == player.playerY - 1 || alienMissileY == player.playerY) {
 
 		if(alienMissileX + 7>= player.playerX && alienMissileX<= player.playerX + PLAYER_WIDTH) {
-			player.health-=2;
+			/* reduce player health */
+			player.health -= 2;
 			displayPlayerAnimation();
 			return 1;
 		}
@@ -204,7 +205,6 @@ void alienShoot() {
 
 		/* clear the old position */
 		if(alienMissilePlayerCollision() == 1) {
-			//player health reduce
 			alienMissileExist = 0;
 			werase(alienMissile);
 			wrefresh(alienMissile);
