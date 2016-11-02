@@ -1,9 +1,13 @@
 # Space-Tak
-It is an ascii game working in terminal window based on ncurses.
-It has various winsows for operation on different objects in game.
-The game is basically based on the co-ordinate handling of the objects.
-> Yet to be implemented :
- 1) Include various levels of varying difficulty
- 2) Scoring
- 3) Remove some bugs
- 4) And some more features
+	> The given project is an ascii ncurses based terminal game.
+
+	> It uses C libraries ~ncurses.h ~menu.h and ~signal.h.
+
+	> The functioning of the game is mainly  distributed as objects 
+	  like aliens, player, player missile, alien missile.
+
+	> To achieve this, the game involves ncurses WINDOWS (ncurses data-type).
+
+	> The program has a menu for the interactive interface.
+
+	> The program uses file to store the high scores.
